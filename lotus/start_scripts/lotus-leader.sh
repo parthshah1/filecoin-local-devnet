@@ -14,12 +14,22 @@ while true; do
     sleep 1s
 done
 
-curl 10.20.20.21/$chain_1/info | jq -c > /go/lotus-local-net/devgen/chain_info
-export DRAND_CHAIN_INFO=/go/lotus-local-net/devgen/chain_info
+curl 10.20.20.21/$chain_1/info | jq -c > /opt/lotus_transformed/customer/devgen/chain_info
+export DRAND_CHAIN_INFO=/opt/lotus_transformed/customer/devgen/chain_info
 
-/go/lotus-local-net/./lotus daemon --lotus-make-genesis=/go/lotus-local-net/devgen/devgen.car --genesis-template=/go/lotus-local-net/lotus-local-net/localnet.json --bootstrap=false &
-/go/lotus-local-net/./lotus wait-api
-/go/lotus-local-net/./lotus wallet import --as-default ~/.genesis-sectors/pre-seal-t01000.key
-/go/lotus-local-net/./lotus net listen > /go/lotus-local-net/devgen/ipv4addr
-/go/lotus-local-net/./lotus-miner init --genesis-miner --actor=t01000 --sector-size=2KiB --pre-sealed-sectors=~/.genesis-sectors --pre-sealed-metadata=~/.genesis-sectors/pre-seal-t01000.json --nosync
-/go/lotus-local-net/./lotus-miner run --nosync 
+./lotus daemon --lotus-make-genesis=/opt/lotus_transformed/customer/devgen/devgen.car --genesis-template=/opt/lotus_transformed/customer/localnet.json --bootstrap=false --config=/opt/lotus_transformed/customer/devgen/config.toml &
+
+echo Waiting for API
+
+./lotus wait-api
+
+echo Finished waiting for API, importing wallet now.
+
+./lotus wallet import --as-default /root/.genesis-sectors/pre-seal-t01000.key
+./lotus net listen > /opt/lotus_transformed/customer/devgen/ipv4addr
+
+# Creating a token in the common volume mount
+./lotus auth create-token --perm admin > /opt/lotus_transformed/customer/devgen/lotus-1-token.txt
+
+./lotus-miner init --genesis-miner --actor=t01000 --sector-size=2KiB --pre-sealed-sectors=/root/.genesis-sectors --pre-sealed-metadata=/root/.genesis-sectors/pre-seal-t01000.json --nosync
+./lotus-miner run --nosync

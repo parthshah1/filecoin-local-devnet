@@ -22,5 +22,3 @@ export DRAND_CHAIN_INFO=/go/lotus-local-net/devgen/chain_info
 /go/lotus-local-net/./lotus wallet import --as-default ~/.genesis-sectors/pre-seal-t01000.key
 /go/lotus-local-net/./lotus-miner init --genesis-miner --actor=t01000 --sector-size=2KiB --pre-sealed-sectors=~/.genesis-sectors --pre-sealed-metadata=~/.genesis-sectors/pre-seal-t01000.json --nosync
 /go/lotus-local-net/./lotus-miner run --nosync 
-
-

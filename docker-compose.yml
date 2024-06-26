@@ -1,0 +1,108 @@
+version: '3.8'
+
+services:
+  drand-1:
+    container_name: drand-1
+    hostname: drand-1
+    image: drand:antithesis
+    entrypoint: /go/drand/scripts/./drand-1.sh
+    volumes:
+      - ./drand/start_scripts/:/go/drand/scripts/
+    networks:
+      antithesis-net:
+        ipv4_address: 10.20.20.21
+  drand-2:
+    container_name: drand-2
+    hostname: drand-2
+    image: drand:antithesis
+    entrypoint: /go/drand/scripts/./drand-2.sh
+    volumes:
+      - ./drand/start_scripts/:/go/drand/scripts/
+    networks:
+      antithesis-net:
+        ipv4_address: 10.20.20.22
+  drand-3:
+    container_name: drand-3
+    hostname: drand-3
+    image: drand:antithesis
+    entrypoint: /go/drand/scripts/./drand-3.sh
+    volumes:
+      - ./drand/start_scripts/:/go/drand/scripts/
+    networks:
+      antithesis-net:
+        ipv4_address: 10.20.20.23
+  lotus-1:
+    container_name: lotus-1
+    hostname: lotus-1
+    image: "lotus:${IMAGE_TAG:-antithesis}"
+    depends_on:
+      - drand-1
+    environment:
+      LOTUS: lotus-1
+      LOTUS_COUNT: 2
+      # LOTUS_API_TIMEOUT: "90s"
+      LOTUS_PATH: /root/.lotus
+      LOTUS_MINER_PATH: /root/.lotus-miner
+      LOTUS_SKIP_GENESIS_CHECK: _yes_
+      CGO_CFLAGS_ALLOW: -D__BLST_PORTABLE__
+      CGO_CFLAGS: -D__BLST_PORTABLE__
+      LOTUS_FEVM_ENABLEETHRPC: true
+      # Problem overriding this, possibly due to wait API
+      # LOTUS_API_LISTENADDRESS: "/ip4/10.20.20.24/tcp/1234/http"
+    entrypoint: /opt/lotus_transformed/customer/entrypoint.sh
+    # entrypoint: ["sleep", "infinity"]
+    volumes:
+      - ./lotus/start_scripts/lotus-leader.sh:/opt/lotus_transformed/customer/entrypoint.sh
+      - ./lotus/devgen/:/opt/lotus_transformed/customer/devgen/
+    networks:
+      antithesis-net:
+        ipv4_address: 10.20.20.24
+  lotus-2:
+    container_name: lotus-2
+    hostname: lotus-2
+    image: "lotus:${IMAGE_TAG:-antithesis}"
+    depends_on:
+      - drand-1
+      - lotus-1
+    environment:
+      LOTUS: lotus-2
+      LOTUS_COUNT: 2
+      LOTUS_PATH: /root/.lotus
+      LOTUS_MINER_PATH: /root/.lotus-miner
+      LOTUS_SKIP_GENESIS_CHECK: _yes_
+      CGO_CFLAGS_ALLOW: -D__BLST_PORTABLE__
+      CGO_CFLAGS: -D__BLST_PORTABLE__
+      LOTUS_FEVM_ENABLEETHRPC: true
+      # LOTUS_API_LISTENADDRESS: "/ip4/10.20.20.25/tcp/1234/http"
+    entrypoint: /opt/lotus_transformed/customer/entrypoint.sh
+    # entrypoint: ["sleep", "infinity"]
+    volumes:
+      - ./lotus/start_scripts/lotus-follower.sh:/opt/lotus_transformed/customer/entrypoint.sh
+      - ./lotus/devgen/:/opt/lotus_transformed/customer/devgen/
+    networks:
+      antithesis-net:
+        ipv4_address: 10.20.20.25
+  # The workload is an RPC client with Curl
+  workload:
+    container_name: workload
+    hostname: workload
+    image: "lotus-workload:latest"
+    depends_on:
+      - drand-1
+      - lotus-1
+      - lotus-2
+    environment:
+      LOTUS: lotus-2
+    entrypoint: ["sleep", "infinity"]
+    volumes:
+      - ./workload/fil_spammer_rpc.py:/root/fil_spammer_rpc.py
+      - ./lotus/devgen/:/root/devgen
+    networks:
+      antithesis-net:
+        ipv4_address: 10.20.20.26
+networks:
+  antithesis-net:
+    driver: bridge
+    ipam:
+      config:
+      - subnet: 10.20.20.0/24

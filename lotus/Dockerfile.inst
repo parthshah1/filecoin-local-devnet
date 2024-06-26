@@ -8,8 +8,8 @@ RUN apt-get update && \
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 
-RUN git clone --recurse-submodules -b releases https://github.com/filecoin-project/lotus.git /opt/lotus_transformed/customer/
-WORKDIR /opt/lotus_transformed/customer/
+RUN git clone --recurse-submodules -b releases https://github.com/filecoin-project/lotus.git /opt/lotus
+WORKDIR /opt/lotus
 COPY ./lotus.patch ./lotus.patch
 COPY ./make.patch ./make.patch
 COPY ./pr-11565-reverse.patch ./pr-11565-reverse.patch
@@ -18,16 +18,16 @@ RUN git apply make.patch
 RUN git apply pr-11565-reverse.patch
 
 # install the antithesis instrumentation tool
-# RUN go get github.com/antithesishq/antithesis-sdk-go@latest
-# RUN go install github.com/antithesishq/antithesis-sdk-go/tools/antithesis-go-instrumentor@latest
-# RUN go mod tidy
-# RUN mkdir /opt/lotus_transformed
-# COPY ./exclusion.txt /opt/exclusion.txt
-# RUN antithesis-go-instrumentor -exclude /opt/exclusion.txt /opt/lotus /opt/lotus_transformed
-# RUN cp -r /opt/lotus/.git /opt/lotus_transformed/customer/
+RUN go get github.com/antithesishq/antithesis-sdk-go@latest
+RUN go install github.com/antithesishq/antithesis-sdk-go/tools/antithesis-go-instrumentor@latest
+RUN go mod tidy
+RUN mkdir /opt/lotus_transformed
+COPY ./exclusion.txt /opt/exclusion.txt
+RUN antithesis-go-instrumentor -exclude /opt/exclusion.txt /opt/lotus /opt/lotus_transformed
+RUN cp -r /opt/lotus/.git /opt/lotus_transformed/customer/
 
 # Building the binaries
-# WORKDIR /opt/lotus_transformed/customer
+WORKDIR /opt/lotus_transformed/customer
 # RUN make lotus
 # RUN make lotus-miner
 # RUN make lotus-seed
@@ -53,8 +53,8 @@ RUN make 2k
 # WORKDIR /opt/lotus
 
 # Some clean up for now
-# RUN mv /opt/lotus_transformed/symbols /symbols
-# RUN rm -rf /opt/lotus
+RUN mv /opt/lotus_transformed/symbols /symbols
+RUN rm -rf /opt/lotus
 
 # Fetch parameters
 RUN ./lotus fetch-params 2048
