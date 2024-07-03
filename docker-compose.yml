@@ -11,6 +11,7 @@ services:
     networks:
       antithesis-net:
         ipv4_address: 10.20.20.21
+
   drand-2:
     container_name: drand-2
     hostname: drand-2
@@ -21,6 +22,7 @@ services:
     networks:
       antithesis-net:
         ipv4_address: 10.20.20.22
+
   drand-3:
     container_name: drand-3
     hostname: drand-3
@@ -31,6 +33,7 @@ services:
     networks:
       antithesis-net:
         ipv4_address: 10.20.20.23
+
   lotus-1:
     container_name: lotus-1
     hostname: lotus-1
@@ -40,23 +43,20 @@ services:
     environment:
       LOTUS: lotus-1
       LOTUS_COUNT: 2
-      # LOTUS_API_TIMEOUT: "90s"
       LOTUS_PATH: /root/.lotus
       LOTUS_MINER_PATH: /root/.lotus-miner
       LOTUS_SKIP_GENESIS_CHECK: _yes_
       CGO_CFLAGS_ALLOW: -D__BLST_PORTABLE__
       CGO_CFLAGS: -D__BLST_PORTABLE__
       LOTUS_FEVM_ENABLEETHRPC: true
-      # Problem overriding this, possibly due to wait API
-      # LOTUS_API_LISTENADDRESS: "/ip4/10.20.20.24/tcp/1234/http"
     entrypoint: /opt/lotus_transformed/customer/entrypoint.sh
-    # entrypoint: ["sleep", "infinity"]
     volumes:
       - ./lotus/start_scripts/lotus-leader.sh:/opt/lotus_transformed/customer/entrypoint.sh
       - ./lotus/devgen/:/opt/lotus_transformed/customer/devgen/
     networks:
       antithesis-net:
         ipv4_address: 10.20.20.24
+
   lotus-2:
     container_name: lotus-2
     hostname: lotus-2
@@ -73,16 +73,14 @@ services:
       CGO_CFLAGS_ALLOW: -D__BLST_PORTABLE__
       CGO_CFLAGS: -D__BLST_PORTABLE__
       LOTUS_FEVM_ENABLEETHRPC: true
-      # LOTUS_API_LISTENADDRESS: "/ip4/10.20.20.25/tcp/1234/http"
     entrypoint: /opt/lotus_transformed/customer/entrypoint.sh
-    # entrypoint: ["sleep", "infinity"]
     volumes:
       - ./lotus/start_scripts/lotus-follower.sh:/opt/lotus_transformed/customer/entrypoint.sh
       - ./lotus/devgen/:/opt/lotus_transformed/customer/devgen/
     networks:
       antithesis-net:
         ipv4_address: 10.20.20.25
-  # The workload is an RPC client with Curl
+
   workload:
     container_name: workload
     hostname: workload
@@ -92,17 +90,21 @@ services:
       - lotus-1
       - lotus-2
     environment:
-      LOTUS: lotus-2
-    entrypoint: ["sleep", "infinity"]
+      RPC_URL: http://10.20.20.24:1234
+      TOKEN_PATH: /root/devgen/jwt
+      NUM_WALLETS: 10
+      NUM_TRANSACTIONS: 100
+    entrypoint: ["python3", "/root/fil_spammer_rpc.py"]
     volumes:
       - ./workload/fil_spammer_rpc.py:/root/fil_spammer_rpc.py
       - ./lotus/devgen/:/root/devgen
     networks:
       antithesis-net:
         ipv4_address: 10.20.20.26
+
 networks:
   antithesis-net:
     driver: bridge
     ipam:
       config:
-      - subnet: 10.20.20.0/24
+        - subnet: 10.20.20.0/24

@@ -29,7 +29,7 @@ echo Finished waiting for API, importing wallet now.
 ./lotus net listen > /opt/lotus_transformed/customer/devgen/ipv4addr
 
 # Creating a token in the common volume mount
-./lotus auth create-token --perm admin > /opt/lotus_transformed/customer/devgen/lotus-1-token.txt
+./lotus auth create-token --perm admin > /opt/lotus_transformed/customer/devgen/jwt
 
 ./lotus-miner init --genesis-miner --actor=t01000 --sector-size=2KiB --pre-sealed-sectors=/root/.genesis-sectors --pre-sealed-metadata=/root/.genesis-sectors/pre-seal-t01000.json --nosync
 ./lotus-miner run --nosync
