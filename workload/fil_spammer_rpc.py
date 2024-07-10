@@ -177,8 +177,8 @@ def transfer_between_wallets(spammer, wallets):
 if __name__ == '__main__':
     BASE_PATH1 = '/root/devgen'
     BASE_PATH2 = '/root/devgen'
-    TOKEN_LOTUS_1 = 'token'
-    TOKEN_LOTUS_2 = 'token'
+    TOKEN_LOTUS_1 = 'lotus-1-token.txt'
+    TOKEN_LOTUS_2 = 'lotus-2-token.txt'
 
     parser = argparse.ArgumentParser()
 
