@@ -1,4 +1,5 @@
 #!/bin/bash
+sleep 6
 drand generate-keypair --tls-disable --id default 10.20.20.23:8080;
 drand start --tls-disable --private-listen 10.20.20.23:8080 --control 8888 --public-listen 0.0.0.0:80 &
 until [[ "$(drand util check --tls-disable 10.20.20.23:8080)" =~ "answers correctly" ]]
