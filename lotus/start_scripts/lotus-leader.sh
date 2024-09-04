@@ -1,7 +1,10 @@
 #!/bin/bash
+sleep 60
 while true; do
     # Extract the first element from the JSON array and store it in a variable
-    chain_1=$(curl 10.20.20.21/chains | jq -r '.[]')
+    curl 10.20.20.21/info 
+    chain_1=$(curl 10.20.20.21/info | jq -r '.[]')
+    echo "Chain Value: $chain_1"
     # Check if chain is not empty
     if [ -n "$chain_1" ] ; then
         echo "Received data: $chain_1"
@@ -15,6 +18,7 @@ while true; do
 done
 
 curl 10.20.20.21/$chain_1/info | jq -c > /opt/lotus_transformed/customer/devgen/chain_info
+cat /opt/lotus_transformed/customer/devgen/chain_info
 export DRAND_CHAIN_INFO=/opt/lotus_transformed/customer/devgen/chain_info
 
 ./lotus daemon --lotus-make-genesis=/opt/lotus_transformed/customer/devgen/devgen.car --genesis-template=/opt/lotus_transformed/customer/localnet.json --bootstrap=false --config=/opt/lotus_transformed/customer/devgen/config.toml &

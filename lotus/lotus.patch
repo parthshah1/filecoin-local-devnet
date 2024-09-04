@@ -1,16 +1,14 @@
-diff --git a/build/drand.go b/build/drand.go
-index c4ba4b3b7..79679adfd 100644
---- a/build/drand.go
-+++ b/build/drand.go
-@@ -2,6 +2,7 @@ package build
+--- a/build/buildconstants/drand.go	2024-09-03 11:45:57
++++ b/build/buildconstants/drand.go	2024-09-03 14:57:41
+@@ -1,6 +1,7 @@
+ package buildconstants
  
  import (
- 	"sort"
 +	"os"
+ 	"sort"
  
- 	"github.com/filecoin-project/lotus/node/modules/dtypes"
- )
-@@ -30,22 +31,23 @@ const (
+ 	"github.com/filecoin-project/go-state-types/abi"
+@@ -17,6 +18,12 @@
  	DrandQuicknet
  )
  
@@ -20,8 +18,12 @@ index c4ba4b3b7..79679adfd 100644
 +	return str
 +}
 +
- var DrandConfigs = map[DrandEnum]dtypes.DrandConfig{
- 	DrandMainnet: {
+ type DrandConfig struct {
+ 	Servers       []string
+ 	Relays        []string
+@@ -32,19 +39,13 @@
+ var DrandConfigs = map[DrandEnum]DrandConfig{
+ 	DrandQuicknet: {
  		Servers: []string{
 -			"https://api.drand.sh",
 -			"https://api2.drand.sh",
@@ -30,22 +32,17 @@ index c4ba4b3b7..79679adfd 100644
 -			"https://api.drand.secureweb3.com:6875", // Storswift
 +			"http://10.20.20.21",
 +			"http://10.20.20.22",
-+			"http://10.20.20.23",
++			"http://10.20.20.23", // Storswift
  		},
- 		Relays: []string{
+-		Relays: []string{
 -			"/dnsaddr/api.drand.sh/",
 -			"/dnsaddr/api2.drand.sh/",
 -			"/dnsaddr/api3.drand.sh/",
- 		},
- 		IsChained:     true,
--		ChainInfoJSON: `{"public_key":"868f005eb8e6e4ca0a47c8a77ceaa5309a47978a7c71bc5cce96366b5d7a569937c529eeda66c7293784a9402801af31","period":30,"genesis_time":1595431050,"hash":"8990e7a9aaed2ffed73dbd7092123d6f289930540d7651336225dc172e51b2ce","groupHash":"176f93498eac9ca337150b46d21dd58673ea4e3581185f869672e59fa4cb390a"}`,
+-		},
++		Relays:        []string{},
+ 		IsChained:     false,
+-		ChainInfoJSON: `{"public_key":"83cf0f2896adee7eb8b5f01fcad3912212c437e0073e911fb90022d3e760183c8c4b450b6a0a6c3ac6a5776a2d1064510d1fec758c921cc22b0e17e63aaf4bcb5ed66304de9cf809bd274ca73bab4af5a6e9c76a4bc09e76eae8991ef5ece45a","period":3,"genesis_time":1692803367,"hash":"52db9ba70e0cc0f6eaf7803dd07447a1f5477735fd3f661792ba94600c84e971","groupHash":"f477d5c89f21a17c863a7f937c6a6d15859414d2be09cd448d4279af331c5d3e","schemeID":"bls-unchained-g1-rfc9380","metadata":{"beaconID":"quicknet"}}`,
 +		ChainInfoJSON: getDrandChainInfo(),
  	},
- 	DrandQuicknet: {
+ 	DrandTestnet: {
  		Servers: []string{
-@@ -91,4 +93,4 @@ var DrandConfigs = map[DrandEnum]dtypes.DrandConfig{
- 		IsChained:     true,
- 		ChainInfoJSON: `{"public_key":"8cad0c72c606ab27d36ee06de1d5b2db1faf92e447025ca37575ab3a8aac2eaae83192f846fc9e158bc738423753d000","period":30,"genesis_time":1595873820,"hash":"80c8b872c714f4c00fdd3daa465d5514049f457f01f85a4caf68cdcd394ba039","groupHash":"d9406aaed487f7af71851b4399448e311f2328923d454e971536c05398ce2d9b"}`,
- 	},
--}
-+}
