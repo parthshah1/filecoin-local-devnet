@@ -64,7 +64,6 @@ services:
     depends_on:
       - drand-1
       - lotus-1
-      - lotus-2
     environment:
       RPC_URL: http://10.20.20.24:1234
       TOKEN_PATH: /root/devgen/jwt
