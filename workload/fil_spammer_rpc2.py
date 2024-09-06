@@ -404,7 +404,7 @@ spammer1 = fil_spammer_rpc(lotus1_rpc, lotus1_token, BASE_PATH, 'lotus-1')
 #spammer2 = fil_spammer_rpc(lotus2_rpc, lotus2_token, BASE_PATH, 'lotus-2')
     
 genesis_wallet = spammer1.get_genesis_wallet()
-#genesis_wallet_pk = spammer1.get_wallet_pk(genesis_wallet)
+genesis_wallet_pk = spammer1.get_wallet_pk(genesis_wallet)
 print(f"genesis wallet pk : {genesis_wallet_pk}")
 wallets1 = spammer1.create_wallets(5)
 #print(f"lotus1 wallets: {wallets1}")

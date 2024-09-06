@@ -68,14 +68,14 @@ services:
       RPC_URL: http://10.20.20.24:1234
       TOKEN_PATH: /root/devgen/jwt
       NUM_WALLETS: 10
-      NUM_TRANSACTIONS: 100
+      NUM_TRANSACTIONS: 10
     entrypoint: ["python3", "/root/fil_spammer_rpc2.py"]
     volumes:
-      - ./workload/fil_spammer_rpc.py:/root/fil_spammer_rpc2.py
+      - ./workload/fil_spammer_rpc2.py:/root/fil_spammer_rpc2.py
       - ./lotus/devgen/:/root/devgen
     networks:
       antithesis-net:
-        ipv4_address: 10.20.20.25
+        ipv4_address: 10.20.20.26
 
 networks:
   antithesis-net:
