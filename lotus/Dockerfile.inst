@@ -8,14 +8,14 @@ RUN apt-get update && \
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 
-RUN git clone --recurse-submodules -b releases https://github.com/filecoin-project/lotus.git /opt/lotus
+RUN git clone https://github.com/filecoin-project/lotus.git /opt/lotus
+
 WORKDIR /opt/lotus
+RUN latest_version=$(git tag -l 'v*' | sort -V -r | head -n 1)
+RUN git checkout $latest_version
 COPY ./lotus.patch ./lotus.patch
-COPY ./make.patch ./make.patch
-COPY ./pr-11565-reverse.patch ./pr-11565-reverse.patch
 RUN git apply lotus.patch
-RUN git apply make.patch
-RUN git apply pr-11565-reverse.patch
+RUN git submodule update --init
 
 # install the antithesis instrumentation tool
 RUN go get github.com/antithesishq/antithesis-sdk-go@latest

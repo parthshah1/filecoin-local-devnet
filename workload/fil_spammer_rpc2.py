@@ -1,4 +1,5 @@
 import requests, json, random, argparse, os, time, math, threading
+time.sleep(120)
     
 class fil_spammer_rpc():
     '''
@@ -392,28 +393,27 @@ def read_all_wallets():
     
 # print(wg)
 lotus1_rpc = "http://10.20.20.24:1234/rpc/v0"
-lotus2_rpc = "http://10.20.20.25:1234/rpc/v0"
-TOKEN_LOTUS_1 = "lotus-1-token.txt"
-TOKEN_LOTUS_2 = "lotus-2-token.txt"
+TOKEN_LOTUS_1 = "jwt"
+#TOKEN_LOTUS_2 = "lotus-2-token.txt"
 BASE_PATH = '/root/devgen'
 # wg = read_all_wallets(BASE_PATH)
 lotus1_token = get_lotus_rpc_auth_token(f'{BASE_PATH}/{TOKEN_LOTUS_1}')
-lotus2_token = get_lotus_rpc_auth_token(f'{BASE_PATH}/{TOKEN_LOTUS_2}')
+#lotus2_token = get_lotus_rpc_auth_token(f'{BASE_PATH}/{TOKEN_LOTUS_2}')
 print(lotus1_token)
 spammer1 = fil_spammer_rpc(lotus1_rpc, lotus1_token, BASE_PATH, 'lotus-1')
-spammer2 = fil_spammer_rpc(lotus2_rpc, lotus2_token, BASE_PATH, 'lotus-2')
+#spammer2 = fil_spammer_rpc(lotus2_rpc, lotus2_token, BASE_PATH, 'lotus-2')
     
 genesis_wallet = spammer1.get_genesis_wallet()
 genesis_wallet_pk = spammer1.get_wallet_pk(genesis_wallet)
 print(f"genesis wallet pk : {genesis_wallet_pk}")
 wallets1 = spammer1.create_wallets(5)
-print(f"lotus1 wallets: {wallets1}")
-wallets2 = spammer2.create_wallets(5)
-print(f"lotus2 wallets: {wallets2}")
+#print(f"lotus1 wallets: {wallets1}")
+#wallets2 = spammer2.create_wallets(5)
+#print(f"lotus2 wallets: {wallets2}")
 pks1 = spammer1.create_wallet_pks(wallets1)
-pks2 = spammer2.create_wallet_pks(wallets2)
-wallets = wallets1 + wallets2
-pks = pks1 + pks2
+#pks2 = spammer2.create_wallet_pks(wallets2)
+wallets = wallets1
+pks = pks1
 spammer1.wealth_transfer(genesis_wallet,genesis_wallet_pk, wallets, 4000000)
 # spammer2.wealth_transfer(genesis_wallet,genesis_wallet_pk, wallets2, 4000000)
 c = 15
