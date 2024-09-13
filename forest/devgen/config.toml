@@ -1,0 +1,10 @@
+genesis = "/opt/forest/start_scripts/devgen/devgen.car"
+port = 1234
+token = "0394j3094jg0394jg34g"
+kademlia = true
+mdns = true
+skip-load = false
+req-window = 100
+tipset-sample-size = 10
+target-peer-count = 100
+encrypt-keystore = false

@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   drand-1:
     container_name: drand-1
@@ -38,6 +36,14 @@ services:
     container_name: lotus-1
     hostname: lotus-1
     image: "lotus:latest"
+    healthcheck:
+      test: >-
+        curl -s -x post -h "content-type: application/json"
+        --data '{ "jsonrpc": "2.0", "method": "filecoin.chainhead", "params": [], "id": 1 }'
+        http://lotus-1:1234/rpc/v0 || exit 1
+      interval: 10s
+      retries: 10
+      timeout: 5s
     depends_on:
       - drand-1
     environment:
@@ -52,27 +58,36 @@ services:
     entrypoint: /opt/lotus_transformed/customer/entrypoint.sh
     volumes:
       - ./lotus/start_scripts/lotus-leader.sh:/opt/lotus_transformed/customer/entrypoint.sh
+      - ./lotus/shared/:/opt/lotus_transformed/customer/shared/
       - ./lotus/devgen/:/opt/lotus_transformed/customer/devgen/
     networks:
       antithesis-net:
         ipv4_address: 10.20.20.24
-        
-  workload:
-    container_name: workload
-    hostname: workload
-    image: "lotus-workload:latest"
+
+  forest-node:
+    container_name: forest-node
+    hostname: forest-node
+    image: "forest:latest"
     depends_on:
-      - drand-1
-      - lotus-1
-    environment:
-      RPC_URL: http://10.20.20.24:1234
-      TOKEN_PATH: /root/devgen/jwt
-      NUM_WALLETS: 10
-      NUM_TRANSACTIONS: 10
-    entrypoint: ["python3", "/root/fil_spammer_rpc2.py"]
+      lotus-1:
+        condition: service_healthy
+    entrypoint: /opt/forest/start_scripts/forest-init.sh
     volumes:
-      - ./workload/fil_spammer_rpc2.py:/root/fil_spammer_rpc2.py
-      - ./lotus/devgen/:/root/devgen
+      - ./lotus/shared/:/opt/forest/start_scripts/shared/
+      - ./forest/start_scripts/:/opt/forest/start_scripts/
+    networks:
+      antithesis-net:
+        ipv4_address: 10.20.20.25
+
+  ubuntu-playbox:
+    container_name: ubuntu-playbox
+    hostname: ubuntu-playbox
+    image: "ubuntu:latest"
+    command: ["sleep", "infinity"]
+    tty: true
+    stdin_open: true
+    volumes:
+      - ./lotus/shared/:/opt/shared/
     networks:
       antithesis-net:
         ipv4_address: 10.20.20.26
@@ -83,3 +98,4 @@ networks:
     ipam:
       config:
         - subnet: 10.20.20.0/24
+
