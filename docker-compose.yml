@@ -64,9 +64,9 @@ services:
       antithesis-net:
         ipv4_address: 10.20.20.24
 
-  forest-node:
-    container_name: forest-node
-    hostname: forest-node
+  forest-1:
+    container_name: forest-1
+    hostname: forest-1
     image: "forest:latest"
     depends_on:
       lotus-1:
