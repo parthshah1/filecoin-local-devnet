@@ -1,4 +1,3 @@
-
 # Docker compose file to run a local devnet.
 # The devnet consists of a:
 # - Lotus node (2k build),
@@ -38,7 +37,7 @@ services:
       - ./drand/start_scripts/:/go/drand/scripts/
     networks:
       antithesis-net:
-        ipv4_address: 10.20.20.24
+        ipv4_address: 10.20.20.23
   # Basic devnet initialisation. This will populate Lotus data volume with necessary artifacts
   # to run a devnet. The initialisation is a lengthy process and occurs only at the first
   # `docker compose up`.
@@ -59,7 +58,8 @@ services:
       antithesis-net:
         ipv4_address: 10.20.20.24
     volumes:
-      - lotus-data:${LOTUS_DATA_DIR}
+      - ./data/lotus-data:${LOTUS_DATA_DIR}
+      - ./lotus/start_scripts/lotus-init.sh:${LOTUS_DATA_DIR}/lotus-init.sh
     environment:
       - LOTUS_SHARK_HEIGHT=${SHARK_HEIGHT}
       - LOTUS_HYGGE_HEIGHT=${HYGGE_HEIGHT}
@@ -70,16 +70,11 @@ services:
       - LOTUS_GENESIS_NETWORK_VERSION=${GENESIS_NETWORK_VERSION}
       - LOTUS_WAFFLE_HEIGHT=${WAFFLE_HEIGHT}
     ports:
-      - ${LOTUS_RPC_PORT}:${LOTUS_RPC_PORT}
-      - ${LOTUS_P2P_PORT}:${LOTUS_P2P_PORT}
+      - "${LOTUS_RPC_PORT}:${LOTUS_RPC_PORT}"
+      - "${LOTUS_P2P_PORT}:${LOTUS_P2P_PORT}"
     env_file:
       - .env
-    entrypoint: ["/bin/bash", "-c" ]
-    command:
-      - |
-        set -euxo pipefail
-        lotus --version
-        lotus daemon --lotus-make-genesis=${LOTUS_DATA_DIR}/devgen.car --genesis-template=${LOTUS_DATA_DIR}/localnet.json --bootstrap=false
+    entrypoint: ["${LOTUS_DATA_DIR}/lotus-init.sh"]
 
   # Lotus miner container. It communicates only with Lotus and not with Forest.
   # lotus_miner:
@@ -248,12 +243,6 @@ services:
   #       export FULLNODE_API_INFO=$$TOKEN:/dns/forest/tcp/${FOREST_RPC_PORT}/http
   #       forest-wallet --remote-wallet import ${LOTUS_DATA_DIR}/genesis-sectors/pre-seal-${MINER_ACTOR_ADDRESS}.key || true
   #       forest-cli net connect /dns/lotus/tcp/${LOTUS_P2P_PORT}/p2p/$$(cat ${LOTUS_DATA_DIR}/PEER_ID)
-
-volumes:
-  # Shared proof parameter files. It is re-used by both Lotus and Forest.
-  # Lotus node, miner and network data.
-  lotus-data:
-  forest-data:
 
 networks:
   antithesis-net:
