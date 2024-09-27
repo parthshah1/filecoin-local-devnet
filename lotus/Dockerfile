@@ -1,5 +1,5 @@
 # Dockerfile to build instrumented version of lotus
-FROM docker.io/golang:1.22.4-bookworm as builder
+FROM golang:latest as builder
 # FROM docker.io/golang:latest as builder
 
 # Installing rust
@@ -8,14 +8,14 @@ RUN apt-get update && \
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 
-RUN git clone --recurse-submodules -b releases https://github.com/filecoin-project/lotus.git /opt/lotus_transformed/customer/
-WORKDIR /opt/lotus_transformed/customer/
+RUN git clone https://github.com/filecoin-project/lotus.git /lotus
+WORKDIR /lotus
+RUN latest_version=$(git tag -l 'v*' | sort -V -r | head -n 1)
+RUN git checkout $latest_version
 COPY ./lotus.patch ./lotus.patch
 COPY ./make.patch ./make.patch
 COPY ./pr-11565-reverse.patch ./pr-11565-reverse.patch
 RUN git apply lotus.patch
-RUN git apply make.patch
-RUN git apply pr-11565-reverse.patch
 
 # install the antithesis instrumentation tool
 # RUN go get github.com/antithesishq/antithesis-sdk-go@latest
@@ -57,22 +57,22 @@ RUN make 2k
 # RUN rm -rf /opt/lotus
 
 # Fetch parameters
-RUN ./lotus fetch-params 2048
+# RUN ./lotus fetch-params 2048
 
-# Pre-seal for the first miner
-RUN ./lotus-seed pre-seal --sector-size 2KiB --num-sectors 2 --miner-addr t01000
-# RUN ./lotus-seed pre-seal --sector-size 2KiB --num-sectors 2
+# # Pre-seal for the first miner
+# RUN ./lotus-seed pre-seal --sector-size 2KiB --num-sectors 2 --miner-addr t01000
+# # RUN ./lotus-seed pre-seal --sector-size 2KiB --num-sectors 2
 
-# Create genesis template
-RUN ./lotus-seed genesis new localnet.json
+# # Create genesis template
+# RUN ./lotus-seed genesis new localnet.json
 
-# Add the first miner to the genesis template
-RUN ./lotus-seed genesis add-miner localnet.json /root/.genesis-sectors/pre-seal-t01000.json
+# # Add the first miner to the genesis template
+# RUN ./lotus-seed genesis add-miner localnet.json /root/.genesis-sectors/pre-seal-t01000.json
 
-# # # Pre-seal for the second miner with a unique address
-# RUN ./lotus-seed pre-seal --sector-size 2KiB --num-sectors 2 --miner-addr t01001
+# # # # Pre-seal for the second miner with a unique address
+# # RUN ./lotus-seed pre-seal --sector-size 2KiB --num-sectors 2 --miner-addr t01001
 
-# # # Add the second miner to the genesis template
-# RUN ./lotus-seed genesis add-miner localnet.json /root/.genesis-sectors/pre-seal-t01001.json
+# # # # Add the second miner to the genesis template
+# # RUN ./lotus-seed genesis add-miner localnet.json /root/.genesis-sectors/pre-seal-t01001.json
 
 ENTRYPOINT ["sleep", "infinity"]

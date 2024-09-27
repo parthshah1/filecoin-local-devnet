@@ -9,6 +9,7 @@ cat /opt/lotus_transformed/customer/localnet.json | jq -r '.NetworkName' > /opt/
 ls -l /opt/lotus_transformed/customer/shared
 # Write the network_name to shared
 # Check if the file was written successfully
+
 if [ -f /opt/lotus_transformed/customer/shared/network_name ]; then
     echo "NetworkName successfully written to shared folder."
 else
