@@ -16,6 +16,11 @@ COPY ./lotus.patch ./lotus.patch
 COPY ./make.patch ./make.patch
 COPY ./pr-11565-reverse.patch ./pr-11565-reverse.patch
 RUN git apply lotus.patch
+RUN CGO_CFLAGS_ALLOW="-D__BLST_PORTABLE__" \
+    CGO_CFLAGS="-D__BLST_PORTABLE__" \
+    FFI_USE_BLST_PORTABLE="1" \
+    FFI_USE_GPU="0" 
+
 
 # install the antithesis instrumentation tool
 # RUN go get github.com/antithesishq/antithesis-sdk-go@latest
@@ -32,7 +37,8 @@ RUN git apply lotus.patch
 # RUN make lotus-miner
 # RUN make lotus-seed
 RUN make 2k
-
+RUN sudo make install
+RUN ./lotus fetch-params 2048
 
 # Thin runner
 # FROM docker.io/golang:1.22.4-bookworm as runner 
