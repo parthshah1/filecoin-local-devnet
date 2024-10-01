@@ -23,12 +23,7 @@ RUN git apply forest.patch
 RUN make install
 
 # Step 6: Set up environment variables and fetch necessary parameters
-ENV FIL_PROOFS_PARAMETER_CACHE="/var/tmp/filecoin-proof-parameters"
 RUN forest-tool fetch-params --keys
-
-# Step 7: Cache actor bundle
-ENV FOREST_ACTOR_BUNDLE_PATH="/var/tmp/forest_actor_bundle.car.zst"
-RUN forest-tool state-migration actor-bundle $FOREST_ACTOR_BUNDLE_PATH
 
 # Step 8: Keep the container alive
 ENTRYPOINT ["sleep", "infinity"]

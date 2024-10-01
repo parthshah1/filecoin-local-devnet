@@ -41,7 +41,7 @@ services:
     container_name: lotus
     networks:
       antithesis-net:
-        ipv4_address: 10.20.20.25
+        ipv4_address: 10.20.20.24
     volumes:
       - ./data/lotus:${LOTUS_DATA_DIR}
       - ./lotus/start_scripts/lotus-node.sh:${LOTUS_DATA_DIR}/lotus-node.sh
@@ -55,7 +55,7 @@ services:
     container_name: lotus-miner
     networks:
       antithesis-net:
-        ipv4_address: 10.20.20.26
+        ipv4_address: 10.20.20.25
     volumes:
       - ./data/lotus:${LOTUS_DATA_DIR}
       - ./lotus/start_scripts/lotus-miner.sh:${LOTUS_DATA_DIR}/lotus-miner.sh
@@ -78,7 +78,7 @@ services:
       - ./forest/start_scripts/forest-init.sh:${FOREST_DATA_DIR}/forest-init.sh
     networks:
       antithesis-net:
-        ipv4_address: 10.20.20.27
+        ipv4_address: 10.20.20.26
     ports:
       - ${FOREST_RPC_PORT}:${FOREST_RPC_PORT}
     env_file:
@@ -97,7 +97,7 @@ services:
       - .env
     networks:
       antithesis-net:
-        ipv4_address: 10.20.20.28
+        ipv4_address: 10.20.20.27
     entrypoint: [ "${FOREST_DATA_DIR}/forest-connector.sh" ]
 
   # Ubuntu service for testing
