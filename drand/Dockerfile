@@ -6,5 +6,5 @@ RUN apt-get update && \
 RUN git clone https://github.com/drand/drand
 
 WORKDIR drand 
-RUN git checkout v2.0.2
+RUN git checkout v2.0.4
 RUN go install -tags=conn_insecure ./cmd/drand
