@@ -45,6 +45,15 @@ services:
     volumes:
       - ./data/lotus:${LOTUS_DATA_DIR}
       - ./lotus/start_scripts/lotus-node.sh:${LOTUS_DATA_DIR}/lotus-node.sh
+    environment:
+      - LOTUS_SHARK_HEIGHT=${SHARK_HEIGHT}
+      - LOTUS_HYGGE_HEIGHT=${HYGGE_HEIGHT}
+      - LOTUS_LIGHTNING_HEIGHT=${LIGHTNING_HEIGHT}
+      - LOTUS_THUNDER_HEIGHT=${THUNDER_HEIGHT}
+      - LOTUS_WATERMELON_HEIGHT=${WATERMELON_HEIGHT}
+      - LOTUS_DRAGON_HEIGHT=${DRAGON_HEIGHT}
+      - LOTUS_GENESIS_NETWORK_VERSION=${GENESIS_NETWORK_VERSION}
+      - LOTUS_WAFFLE_HEIGHT=${WAFFLE_HEIGHT}
     env_file:
       - .env
     entrypoint: ["${LOTUS_DATA_DIR}/lotus-node.sh"]
@@ -59,10 +68,20 @@ services:
     volumes:
       - ./data/lotus:${LOTUS_DATA_DIR}
       - ./lotus/start_scripts/lotus-miner.sh:${LOTUS_DATA_DIR}/lotus-miner.sh
+    environment:
+      - LOTUS_SHARK_HEIGHT=${SHARK_HEIGHT}
+      - LOTUS_HYGGE_HEIGHT=${HYGGE_HEIGHT}
+      - LOTUS_LIGHTNING_HEIGHT=${LIGHTNING_HEIGHT}
+      - LOTUS_THUNDER_HEIGHT=${THUNDER_HEIGHT}
+      - LOTUS_WATERMELON_HEIGHT=${WATERMELON_HEIGHT}
+      - LOTUS_DRAGON_HEIGHT=${DRAGON_HEIGHT}
+      - LOTUS_GENESIS_NETWORK_VERSION=${GENESIS_NETWORK_VERSION}
+      - LOTUS_WAFFLE_HEIGHT=${WAFFLE_HEIGHT}
     ports:
       - ${MINER_RPC_PORT}:${MINER_RPC_PORT}
     env_file:
       - ./lotus/lotus-miner.env
+      - .env
     restart: on-failure
     entrypoint: ["${LOTUS_DATA_DIR}/lotus-miner.sh"]
    
@@ -79,6 +98,16 @@ services:
     networks:
       antithesis-net:
         ipv4_address: 10.20.20.26
+    environment:
+      - FOREST_F3_PERMANENT_PARTICIPATING_MINER_ADDRESSES=${MINER_ACTOR_ADDRESS}
+      - FOREST_GENESIS_NETWORK_VERSION=${GENESIS_NETWORK_VERSION}
+      - FOREST_SHARK_HEIGHT=${SHARK_HEIGHT}
+      - FOREST_HYGGE_HEIGHT=${HYGGE_HEIGHT}
+      - FOREST_LIGHTNING_HEIGHT=${LIGHTNING_HEIGHT}
+      - FOREST_THUNDER_HEIGHT=${THUNDER_HEIGHT}
+      - FOREST_WATERMELON_HEIGHT=${WATERMELON_HEIGHT}
+      - FOREST_DRAGON_HEIGHT=${DRAGON_HEIGHT}
+      - FOREST_WAFFLE_HEIGHT=${WAFFLE_HEIGHT}
     ports:
       - ${FOREST_RPC_PORT}:${FOREST_RPC_PORT}
     env_file:
