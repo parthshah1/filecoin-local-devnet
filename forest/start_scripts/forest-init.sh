@@ -25,6 +25,5 @@ forest --genesis "${LOTUS_DATA_DIR}/devgen.car" \
        --rpc-address 10.20.20.26:"${FOREST_RPC_PORT}" \
        --p2p-listen-address /ip4/10.20.20.26/tcp/${FOREST_P2P_PORT} \
        --skip-load-actors
-
 forest -h
 sleep infinity
