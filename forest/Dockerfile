@@ -15,7 +15,12 @@ ENV PATH="/root/.cargo/bin:${PATH}"
 RUN git clone https://github.com/chainsafe/forest /forest
 WORKDIR /forest
 ARG FOREST_VERSION
-RUN git checkout $FOREST_VERSION
+RUN if [ -z "$FOREST_VERSION" ]; then \
+    LATEST_RELEASE=$(git tag -l 'v*' | grep -v "-" | sort -V -r | head -n 1); \
+    git checkout $LATEST_RELEASE; \
+else \
+    git checkout $FOREST_VERSION; \
+fi
 COPY ./forest_config.toml.tpl .
 # Step 4: Copy and apply the patch (this changes more frequently, so it's placed later)
 COPY ./forest.patch ./forest.patch

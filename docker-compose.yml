@@ -37,7 +37,7 @@ services:
 
   #Lotus node service
   lotus:
-    image: lotus:1.29.1
+    image: lotus:latest
     container_name: lotus
     networks:
       antithesis-net:
@@ -61,7 +61,7 @@ services:
 
   # Lotus miner service
   lotus_miner:
-    image: lotus:1.29.1
+    image: lotus:latest
     container_name: lotus-miner
     networks:
       antithesis-net:
@@ -88,7 +88,7 @@ services:
 
   # Forest service
   forest:
-    image: forest:0.20.0
+    image: forest:latest
     container_name: forest
     volumes:
       - ./data/lotus:${LOTUS_DATA_DIR}
@@ -115,7 +115,7 @@ services:
 
   # Forest <-> Lotus connector service
   forest-connecter:
-    image: forest:0.20.0
+    image: forest:latest
     container_name: forest-connector
     volumes:
       - ./data/lotus:${LOTUS_DATA_DIR}

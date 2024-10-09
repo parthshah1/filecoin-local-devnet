@@ -7,6 +7,7 @@ check_forest_health() {
 
     if [ "$response_code" -eq 405 ]; then
         echo "Forest service is healthy (200 OK)."
+        sleep 10
         return 0
     else
         echo "Forest service is unhealthy (Response code: $response_code). Retrying..."

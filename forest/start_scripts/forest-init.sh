@@ -38,6 +38,7 @@ done
 # Fetch and save DRAND chain information
 curl "http://drand-1/info" | jq -c > chain_info
 export DRAND_CHAIN_INFO=chain_info
+cat $DRAND_CHAIN_INFO
 
 # Extract network name from localnet.json and set it as an environment variable
 export NETWORK_NAME=$(grep -o "localnet.*" "${LOTUS_DATA_DIR}/localnet.json" | tr -d '",' )
