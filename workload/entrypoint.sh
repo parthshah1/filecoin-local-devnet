@@ -32,5 +32,4 @@ echo "Ready to start the workload"
 python3 /root/devgen/fil_spammer_rpc.py 1_create_wallets
 python3 /root/devgen/fil_spammer_rpc.py 2_transfer_funds
 python3 /root/devgen/fil_spammer_rpc.py 3_transfer_between_wallets
-
 sleep infinity

@@ -14,15 +14,21 @@ RUN export LOTUS_PATH=~/.lotus-local-net && \
     export CGO_CFLAGS_ALLOW="-D__BLST_PORTABLE__" && \
     export CGO_CFLAGS="-D__BLST_PORTABLE__"
 WORKDIR /lotus
-RUN latest_version=$(git tag -l 'v*' | sort -V -r | head -n 1)
-RUN git checkout v1.29.1
+
+# Using environment variable LOTUS_VERSION to checkout a specific version or the latest release if not provided
+ARG LOTUS_VERSION
+RUN if [ -z "$LOTUS_VERSION" ]; then \
+    LATEST_RELEASE=$(git tag -l 'v*' | grep -v "-" | sort -V -r | head -n 1); \
+    git checkout $LATEST_RELEASE; \
+else \
+    git checkout $LOTUS_VERSION; \
+fi
+
 COPY ./lotus.patch ./lotus.patch
 COPY ./config.toml .
 RUN git apply lotus.patch
 
 RUN make 2k
-
-CMD ["./lotus","--version"]
 # Fetch parameters
 RUN ./lotus fetch-params 2048
 

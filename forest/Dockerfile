@@ -14,6 +14,8 @@ ENV PATH="/root/.cargo/bin:${PATH}"
 # Step 3: Clone the repository (this is cached unless the repository changes)
 RUN git clone https://github.com/chainsafe/forest /forest
 WORKDIR /forest
+ARG FOREST_VERSION
+RUN git checkout $FOREST_VERSION
 COPY ./forest_config.toml.tpl .
 # Step 4: Copy and apply the patch (this changes more frequently, so it's placed later)
 COPY ./forest.patch ./forest.patch
