@@ -4,20 +4,20 @@ set -euo pipefail
 
 # waiting until lotus node is up
 
-sleep 15
+sleep 100
 
-lotus_node_ready=0
-while [[ ${lotus_node_ready?} -eq 0 ]]
-do
-    echo "forest: checking if lotus-node is ready.."
-    if [[ -e "/container_ready/lotus-node" ]]
-    then
-        echo "forest: lotus-node is ready!"
-        echo "forest: continuing startup..."
-        lotus_node_ready=1
-    fi
-    sleep 10
-done
+# lotus_node_ready=0
+# while [[ ${lotus_node_ready?} -eq 0 ]]
+# do
+#     echo "forest: checking if lotus-node is ready.."
+#     if [[ -e "/container_ready/lotus-node" ]]
+#     then
+#         echo "forest: lotus-node is ready!"
+#         echo "forest: continuing startup..."
+#         lotus_node_ready=1
+#     fi
+#     sleep 10
+# done
 
 # Fetch and save DRAND chain information
 curl 10.20.20.21/info | jq -c > chain_info
@@ -26,7 +26,7 @@ export DRAND_CHAIN_INFO=chain_info
 export NETWORK_NAME=$(grep -o "localnet.*" "${LOTUS_DATA_DIR}/localnet.json" | tr -d '",' )
 
 # Copy the forest configuration template and update it with the network name
-cp /forest/forest_config.toml.tpl "${FOREST_DATA_DIR}/forest_config.toml"
+cp /forest/forest_config.toml "${FOREST_DATA_DIR}/forest_config.toml"
 echo "name = \"${NETWORK_NAME}\"" >> "${FOREST_DATA_DIR}/forest_config.toml"
 
 # Load the token and set the full node API information

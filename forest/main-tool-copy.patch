@@ -1,0 +1,17 @@
+--- a/src/tool/main.rs	2024-09-06 12:05:03
++++ b/src/tool/main.rs	2024-10-10 13:40:18
+@@ -7,11 +7,14 @@
+ use super::subcommands::Subcommand;
+ use crate::cli_shared::logger::setup_minimal_logger;
+ use clap::Parser as _;
++use antithesis_sdk::prelude::*;
++use serde_json::json;
+ 
+ pub fn main<ArgT>(args: impl IntoIterator<Item = ArgT>) -> anyhow::Result<()>
+ where
+     ArgT: Into<OsString> + Clone,
+ {
++    antithesis_init();
+     // Capture Cli inputs
+     let Cli { cmd } = Cli::parse_from(args);
+     setup_minimal_logger();

@@ -4,7 +4,7 @@
   #
   # type: string
   # env var: LOTUS_API_LISTENADDRESS
-  ListenAddress = "/ip4/10.20.20.24/tcp/1234/http"
+  ListenAddress = "/ip4/0.0.0.0/tcp/1234/http"
 
   # type: string
   # env var: LOTUS_API_REMOTELISTENADDRESS
@@ -39,7 +39,7 @@
   #
   # type: []string
   # env var: LOTUS_LIBP2P_LISTENADDRESSES
-  #ListenAddresses = ["/ip4/0.0.0.0/tcp/0", "/ip6/::/tcp/0", "/ip4/0.0.0.0/udp/0/quic-v1", "/ip6/::/udp/0/quic-v1", "/ip4/0.0.0.0/udp/0/quic-v1/webtransport", "/ip6/::/udp/0/quic-v1/webtransport"]
+  ListenAddresses = ["/ip4/0.0.0.0/tcp/0", "/ip6/::/tcp/0"]
 
   # Addresses to explicitally announce to other peers. If not specified,
   # all interface addresses are announced
@@ -251,7 +251,7 @@
   #
   # type: bool
   # env var: LOTUS_FEVM_ENABLEETHRPC
-  #EnableEthRPC = false
+  EnableEthRPC = true
 
   # EthTxHashMappingLifetimeDays the transaction hash lookup database will delete mappings that have been stored for more than x days
   # Set to 0 to keep all mappings

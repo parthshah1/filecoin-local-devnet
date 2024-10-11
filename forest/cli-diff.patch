@@ -1,0 +1,17 @@
+--- a/src/cli/main.rs	2024-09-06 12:05:03
++++ b/src/cli/main.rs	2024-10-10 13:39:43
+@@ -10,11 +10,14 @@
+ use anyhow::bail;
+ use clap::Parser;
+ use std::ffi::OsString;
++use antithesis_sdk::prelude::*;
++use serde_json::json;
+ 
+ pub fn main<ArgT>(args: impl IntoIterator<Item = ArgT>) -> anyhow::Result<()>
+ where
+     ArgT: Into<OsString> + Clone,
+ {
++    antithesis_init();
+     // Capture Cli inputs
+     let Cli { token, cmd } = Cli::parse_from(args);
+ 

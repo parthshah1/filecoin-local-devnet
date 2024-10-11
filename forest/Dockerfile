@@ -2,8 +2,9 @@ FROM docker.io/rust:latest as builder
 
 # Step 1: Install dependencies
 RUN apt-get update && \
-    apt-get install --no-install-recommends jq -y build-essential clang curl git ca-certificates && \
+    apt-get install --no-install-recommends wget jq -y clang-14 build-essential curl git ca-certificates && \
     update-ca-certificates
+
 RUN curl -OL https://golang.org/dl/go1.23.1.linux-amd64.tar.gz && \
     tar -C /usr/local -xzf go1.23.1.linux-amd64.tar.gz && \
     rm go1.23.1.linux-amd64.tar.gz
@@ -14,14 +15,41 @@ ENV PATH="/root/.cargo/bin:${PATH}"
 # Step 3: Clone the repository (this is cached unless the repository changes)
 RUN git clone https://github.com/chainsafe/forest /forest
 WORKDIR /forest
-COPY ./forest_config.toml.tpl .
+ARG FOREST_VERSION
+RUN if [ -z "$FOREST_VERSION" ]; then \
+    LATEST_RELEASE=$(git tag -l 'v*' | grep -v "-" | sort -V -r | head -n 1); \
+    git checkout $LATEST_RELEASE; \
+else \
+    git checkout $FOREST_VERSION; \
+fi
+COPY libvoidstar.so /usr/lib/libvoidstar.so
+COPY ./forest_config.toml .
 # Step 4: Copy and apply the patch (this changes more frequently, so it's placed later)
 COPY ./forest.patch ./forest.patch
+COPY ./cli-diff.patch .
+COPY ./main-tool-copy.patch .
+COPY ./wallet-diff.patch .
+COPY ./daemon-diff.patch .
+COPY ./cargo-diff.patch .
 RUN git apply forest.patch
-
+RUN git apply cli-diff.patch
+RUN git apply cargo-diff.patch
+RUN git apply main-tool-copy.patch
+RUN git apply daemon-diff.patch
+RUN git apply wallet-diff.patch
 # Step 5: Build and install the project
-RUN make install
+ENV LIBVOIDSTAR_PATH="/usr/lib" 
+ENV LD_LIBRARY_PATH="${LIBVOIDSTAR_PATH}"
+ENV RUSTFLAGS="\
+    -C codegen-units=1 \
+    -C passes=sancov-module \
+    -C llvm-args=-sanitizer-coverage-level=3 \
+    -C llvm-args=-sanitizer-coverage-trace-pc-guard \
+    -C link-args=-Wl,--build-id \
+    -L ${LIBVOIDSTAR_PATH} \
+    -l voidstar"
 
+RUN make install
 # Step 6: Set up environment variables and fetch necessary parameters
 ENV FIL_PROOFS_PARAMETER_CACHE="/var/tmp/filecoin-proof-parameters"
 RUN forest-tool fetch-params --keys

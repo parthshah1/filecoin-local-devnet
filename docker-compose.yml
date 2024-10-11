@@ -36,9 +36,9 @@ services:
       antithesis-net:
         ipv4_address: 10.20.20.23
 
-  # Lotus node service
+  #Lotus node service
   lotus_node:
-    image: lotus:latest
+    image: lotus:inst
     container_name: lotus
     networks:
       antithesis-net:
@@ -62,7 +62,7 @@ services:
 
   # Lotus miner service
   lotus_miner:
-    image: lotus:latest
+    image: lotus:inst
     container_name: lotus-miner
     networks:
       antithesis-net:
@@ -91,7 +91,7 @@ services:
 
   # Forest service
   forest:
-    image: forest:latest
+    image: forest:inst
     container_name: forest
     volumes:
       - ./data/lotus:${LOTUS_DATA_DIR}
@@ -103,7 +103,6 @@ services:
       antithesis-net:
         ipv4_address: 10.20.20.26
     environment:
-      - FOREST_F3_PERMANENT_PARTICIPATING_MINER_ADDRESSES=${MINER_ACTOR_ADDRESS}
       - FOREST_GENESIS_NETWORK_VERSION=${GENESIS_NETWORK_VERSION}
       - FOREST_SHARK_HEIGHT=${SHARK_HEIGHT}
       - FOREST_HYGGE_HEIGHT=${HYGGE_HEIGHT}
@@ -120,7 +119,7 @@ services:
 
   # Forest <-> Lotus connector service
   forest-connecter:
-    image: forest:latest
+    image: forest:inst
     container_name: forest-connector
     volumes:
       - ./data/lotus:${LOTUS_DATA_DIR}
@@ -134,16 +133,6 @@ services:
         ipv4_address: 10.20.20.27
     entrypoint: [ "${FOREST_DATA_DIR}/forest-connector.sh" ]
 
-  # Ubuntu service for testing
-  # ubuntu:
-  #   image: ubuntu:latest
-  #   container_name: ubuntu-playbox
-  #   networks:
-  #     antithesis-net:
-  #       ipv4_address: 10.20.20.30
-  #   tty: true
-  #   stdin_open: true
-  #   command: /bin/bash
 
 networks:
   antithesis-net:

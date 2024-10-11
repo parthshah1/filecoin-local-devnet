@@ -1,18 +1,18 @@
 #!/bin/bash
 
-sleep 25
+sleep 110
 
-forest_init=0
-while [[ ${forest_init?} -eq 0 ]]
-do
-    echo "forest-connector: checking if forest is ready.."
-    if [[ -e "${FOREST_DATA_DIR}/token.jwt" ]]; then
-        echo "forest-connector: forest is ready!"
-        echo "forest-connector: continuing startup..."
-        forest_init=1
-    fi
-    sleep 10
-done
+# forest_init=0
+# while [[ ${forest_init?} -eq 0 ]]
+# do
+#     echo "forest-connector: checking if forest is ready.."
+#     if [[ -e "${FOREST_DATA_DIR}/token.jwt" ]]; then
+#         echo "forest-connector: forest is ready!"
+#         echo "forest-connector: continuing startup..."
+#         forest_init=1
+#     fi
+#     sleep 10
+# done
 
 set -euxo pipefail
 export TOKEN=$(cat ${FOREST_DATA_DIR}/token.jwt)

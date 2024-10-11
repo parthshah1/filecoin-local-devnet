@@ -1,0 +1,20 @@
+--- a/src/daemon/main.rs	2024-09-06 12:05:03
++++ b/src/daemon/main.rs	2024-10-10 14:29:43
+@@ -18,7 +18,8 @@
+ use std::ffi::OsString;
+ use std::{fs::File, process, time::Duration};
+ use tracing::info;
+-
++use antithesis_sdk::prelude::*;
++use serde_json::json;
+ // Initiate an Event object in shared memory.
+ fn create_ipc_lock() -> anyhow::Result<()> {
+     let mut shmem = ipc_shmem_conf().create()?;
+@@ -79,6 +80,7 @@
+ where
+     ArgT: Into<OsString> + Clone,
+ {
++    antithesis_init();
+     // Capture Cli inputs
+     let Cli { opts, cmd } = Cli::parse_from(args);
+ 
